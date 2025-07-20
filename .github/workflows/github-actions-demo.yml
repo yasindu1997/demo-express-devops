@@ -21,8 +21,19 @@ jobs:
     - name: Deploy on EC2
       run: |
         ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
+          # Load NVM and Node environment (important for npm, pm2)
+          export NVM_DIR="$HOME/.nvm"
+          [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+
+          # Navigate to app directory
           cd /home/ubuntu/demo-express-devops
+
+          # Pull latest code
           git pull origin main
+
+          # Install dependencies
           npm install
-          pm2 reload index  # or pm2 restart app
+
+          # Reload pm2 process (named 'index' here)
+          pm2 reload index
         EOF
